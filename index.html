@@ -9,14 +9,12 @@
 <meta name="theme-color" content="#0A0A0F">
 <title>Mes Heures</title>
 <style>
-:root {
-  --bg:#0A0A0F;--bg2:#13131A;--bg3:#1E1E28;--bg4:#2A2A38;--bg5:#35354A;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+:root{
+  --bg:#0A0A0F;--bg2:#13131A;--bg3:#1E1E28;--bg4:#2A2A38;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
   --text:#F2F2F7;--text2:rgba(242,242,247,0.55);--text3:rgba(242,242,247,0.28);
-  --blue:#0A84FF;--green:#30D158;--red:#FF453A;--orange:#FF9F0A;
-  --r16:16px;--r12:12px;
-  --safe-top:env(safe-area-inset-top,50px);
-  --safe-bot:env(safe-area-inset-bottom,34px);
+  --blue:#0A84FF;--green:#30D158;--red:#FF453A;--orange:#FF9F0A;--purple:#BF5AF2;
+  --safe-top:env(safe-area-inset-top,50px);--safe-bot:env(safe-area-inset-bottom,34px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
@@ -26,7 +24,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
 .page{flex:1;display:none;flex-direction:column;overflow:hidden}
 .page.active{display:flex}
 .safe-top{height:var(--safe-top);flex-shrink:0;background:var(--bg)}
-.hdr{flex-shrink:0;background:rgba(10,10,15,.9);backdrop-filter:blur(24px) saturate(160%);
+
+/* HEADER */
+.hdr{flex-shrink:0;background:rgba(10,10,15,.92);backdrop-filter:blur(24px) saturate(160%);
   -webkit-backdrop-filter:blur(24px) saturate(160%);border-bottom:.5px solid var(--border);padding:10px 18px 12px}
 .hdr-row{display:flex;align-items:center;justify-content:space-between}
 .hdr h1{font-size:26px;font-weight:800;letter-spacing:-.6px}
@@ -37,130 +37,171 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
   justify-content:center;transition:transform .12s,background .12s}
 .nav-btn:active{transform:scale(.88);background:var(--bg4)}
 .nav-week{flex:1;text-align:center;font-size:13px;font-weight:600;color:var(--text2)}
-.btn-today{font-size:12px;border:none;background:var(--bg3);color:var(--blue);
+.btn-sm{font-size:12px;border:none;background:var(--bg3);color:var(--blue);
   font-weight:700;padding:3px 11px;border-radius:20px;cursor:pointer;font-family:inherit}
-.btn-today:active{background:var(--bg4)}
+.btn-sm:active{background:var(--bg4)}
+
+/* SCROLL */
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;
   padding:16px 14px calc(82px + var(--safe-bot));
   display:flex;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch}
 .scroll::-webkit-scrollbar{display:none}
 
-/* HERO */
-.hero{border-radius:22px;padding:18px 20px 18px;position:relative;}
+/* HERO SEMAINE */
+.hero{border-radius:22px;padding:18px 20px 18px;position:relative}
 .hero.surplus{background:linear-gradient(140deg,#0d2a18,#0a1f24);
-  box-shadow:0 0 40px rgba(48,209,88,.12),inset 0 1px 0 rgba(48,209,88,.2);
-  border:.5px solid rgba(48,209,88,.2)}
+  box-shadow:0 0 40px rgba(48,209,88,.12),inset 0 1px 0 rgba(48,209,88,.2);border:.5px solid rgba(48,209,88,.2)}
 .hero.deficit{background:linear-gradient(140deg,#2a0d0d,#24100a);
-  box-shadow:0 0 40px rgba(255,69,58,.1),inset 0 1px 0 rgba(255,69,58,.18);
-  border:.5px solid rgba(255,69,58,.18)}
+  box-shadow:0 0 40px rgba(255,69,58,.1),inset 0 1px 0 rgba(255,69,58,.18);border:.5px solid rgba(255,69,58,.18)}
 .hero.neutral{background:linear-gradient(140deg,var(--bg2),var(--bg3));border:.5px solid var(--border)}
 .hero-orb{position:absolute;right:-30px;top:-30px;width:120px;height:120px;
   border-radius:50%;opacity:.18;filter:blur(30px);pointer-events:none;z-index:0}
 .hero-lbl,.hero-val,.hero-stats,.prog-wrap{position:relative;z-index:1}
-.hero-lbl{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
-  color:rgba(242,242,247,0.45);margin-bottom:4px}
+.hero-lbl{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:rgba(242,242,247,0.45);margin-bottom:4px}
 .hero-val{font-size:48px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:12px;color:var(--text)}
 .hero.surplus .hero-val{color:var(--green)}
 .hero.deficit .hero-val{color:var(--red)}
-.hero.neutral .hero-val{color:rgba(242,242,247,0.35);font-size:36px;letter-spacing:-1px}
-.hero-stats{display:flex;margin-top:0}
+.hero.neutral .hero-val{color:rgba(242,242,247,0.3);font-size:36px;letter-spacing:-1px}
+.hero-stats{display:flex}
 .hs{flex:1;padding:12px 0 0;border-top:1px solid rgba(255,255,255,.1)}
 .hs+.hs{border-left:1px solid rgba(255,255,255,.1);padding-left:14px}
-.hs-lbl{font-size:10px;color:rgba(242,242,247,0.4);font-weight:700;letter-spacing:.5px;
-  text-transform:uppercase;margin-bottom:3px}
+.hs-lbl{font-size:10px;color:rgba(242,242,247,0.4);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
 .hs-v{font-size:18px;font-weight:700;letter-spacing:-.4px;color:var(--text)}
 .prog-wrap{margin-top:12px}
-.prog-top{display:flex;justify-content:space-between;font-size:11px;font-weight:600;
-  color:rgba(242,242,247,0.4);margin-bottom:5px}
+.prog-top{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:rgba(242,242,247,0.4);margin-bottom:5px}
 .prog-track{height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;border-radius:2px;transition:width .7s cubic-bezier(.34,1.56,.64,1)}
 .hero.surplus .prog-fill{background:var(--green)}
 .hero.deficit .prog-fill{background:var(--red)}
 .hero.neutral .prog-fill{background:var(--blue)}
 
-/* SECTION */
+/* SECTION TITLE */
 .sec{font-size:18px;font-weight:700;letter-spacing:-.3px;padding:2px 2px 0}
 
 /* DAY CARD */
-.day-card{background:var(--bg2);border-radius:var(--r16);border:.5px solid var(--border);
-  overflow:hidden;transition:transform .12s;margin-bottom:10px}
+.day-card{background:var(--bg2);border-radius:16px;border:.5px solid var(--border);overflow:hidden;transition:transform .12s;margin-bottom:10px}
 .day-card:active{transform:scale(.99)}
-.day-hdr{display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px 10px;border-bottom:.5px solid var(--border)}
+.day-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:.5px solid var(--border)}
+.day-left{}
 .day-name{font-size:15px;font-weight:700}
 .day-date{font-size:11px;color:var(--text3);margin-top:1px;font-weight:500}
-.day-badge{font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--green);transition:color .2s}
+.day-right{display:flex;align-items:center;gap:8px}
+.day-badge{font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--green)}
 .day-badge.empty{font-size:13px;font-weight:400;color:var(--text3)}
-.day-badge.done{background:rgba(48,209,88,.1);color:var(--green);
-  padding:4px 10px;border-radius:20px;font-size:15px}
+.day-badge.done{background:rgba(48,209,88,.1);color:var(--green);padding:4px 10px;border-radius:20px;font-size:15px}
+.ferie-btn{font-size:11px;font-weight:700;padding:3px 9px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;transition:all .15s}
+.ferie-btn.off{background:var(--bg3);color:var(--text3)}
+.ferie-btn.on{background:rgba(191,90,242,.15);color:var(--purple);border:.5px solid rgba(191,90,242,.3)}
 .day-body{padding:10px 14px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ts-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.ts-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:4px}
 .dot{width:5px;height:5px;border-radius:50%;display:inline-block}
 .dot.m{background:var(--blue)}.dot.am{background:var(--orange)}
 .ts-row{display:flex;align-items:center;gap:4px}
 .ti-wrap{flex:1;position:relative}
-.ti-wrap b{position:absolute;top:5px;left:9px;font-size:9px;font-weight:700;
-  color:var(--text3);letter-spacing:.4px;text-transform:uppercase;pointer-events:none}
+.ti-wrap b{position:absolute;top:5px;left:9px;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.4px;text-transform:uppercase;pointer-events:none}
 .ti{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:10px;
   color:var(--text);font-size:16px;font-weight:700;font-family:inherit;
   padding:18px 8px 5px;text-align:center;outline:none;
-  transition:border-color .2s,background .2s;letter-spacing:.3px;
-  -webkit-appearance:none;caret-color:var(--blue)}
-.ti:focus{border-color:var(--blue);background:rgba(10,132,255,.07)}
-.ti::placeholder{color:var(--text3);font-size:14px;font-weight:400;letter-spacing:0}
-.ti-sep{font-size:14px;color:var(--text3);flex-shrink:0;margin-top:5px}
-.pause-row{display:flex;align-items:center;gap:10px;grid-column:1/-1;
-  padding-top:8px;border-top:.5px solid var(--border);margin-top:2px}
-.pause-lbl{font-size:12px;color:var(--text3);font-weight:500;flex:1}
-.pause-i{width:80px;background:var(--bg3);border:1.5px solid transparent;
-  border-radius:9px;color:var(--text);font-size:15px;font-weight:700;
-  font-family:inherit;padding:7px 8px;text-align:center;outline:none;
   transition:border-color .2s,background .2s;-webkit-appearance:none;caret-color:var(--blue)}
+.ti:focus{border-color:var(--blue);background:rgba(10,132,255,.07)}
+.ti::placeholder{color:var(--text3);font-size:14px;font-weight:400}
+.ti-sep{font-size:14px;color:var(--text3);flex-shrink:0;margin-top:5px}
+.pause-row{display:flex;align-items:center;gap:10px;grid-column:1/-1;padding-top:8px;border-top:.5px solid var(--border);margin-top:2px}
+.pause-lbl{font-size:12px;color:var(--text3);font-weight:500;flex:1}
+.pause-i{width:80px;background:var(--bg3);border:1.5px solid transparent;border-radius:9px;
+  color:var(--text);font-size:15px;font-weight:700;font-family:inherit;padding:7px 8px;
+  text-align:center;outline:none;transition:border-color .2s;-webkit-appearance:none;caret-color:var(--blue)}
 .pause-i:focus{border-color:var(--blue);background:rgba(10,132,255,.07)}
 .pause-i::placeholder{color:var(--text3);font-size:12px;font-weight:400}
+.night-info{font-size:10px;color:rgba(191,90,242,.7);font-weight:600;grid-column:1/-1;text-align:center;padding-top:2px}
 
-/* HISTORY */
-.hist-summary{border-radius:var(--r16);background:var(--bg2);border:.5px solid var(--border);
-  padding:16px 16px 14px;display:flex;gap:0}
-.hsi{flex:1;text-align:center}
-.hsi+.hsi{border-left:.5px solid var(--border)}
-.hsi-lbl{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:4px}
-.hsi-v{font-size:22px;font-weight:800;letter-spacing:-.6px}
-.hsi-v.pos{color:var(--green)}.hsi-v.neg{color:var(--red)}.hsi-v.neu{color:var(--text2)}
-.hist-list{background:var(--bg2);border-radius:var(--r16);
-  border:.5px solid var(--border);overflow:hidden}
-.hist-row{display:flex;align-items:center;padding:13px 14px;
-  border-bottom:.5px solid var(--border);cursor:pointer;
-  transition:background .1s;gap:10px}
-.hist-row:last-child{border-bottom:none}
-.hist-row:active{background:var(--bg3)}
-.hr-dot{width:34px;height:34px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
-.hr-dot.pos{background:rgba(48,209,88,.15);color:var(--green)}
-.hr-dot.neg{background:rgba(255,69,58,.12);color:var(--red)}
-.hr-dot.neu{background:var(--bg3);color:var(--text3)}
-.hr-info{flex:1}
-.hr-week{font-size:14px;font-weight:600}
-.hr-sub{font-size:11px;color:var(--text3);margin-top:1px}
-.hr-right{text-align:right}
-.hr-ecart{font-size:16px;font-weight:800;letter-spacing:-.3px}
-.hr-ecart.pos{color:var(--green)}.hr-ecart.neg{color:var(--red)}
-.hr-ecart.neu{color:var(--text3);font-size:13px;font-weight:400}
-.hr-pct{font-size:11px;color:var(--text3);margin-top:1px}
-.hr-chev{color:var(--text3);font-size:11px;margin-left:4px}
-.empty-hist{padding:40px 20px;text-align:center;color:var(--text3);
-  font-size:14px;line-height:1.6}
-.empty-hist .ei{font-size:36px;margin-bottom:10px}
+/* ══ COMPTEUR PAGE ══ */
+
+/* ANNÉE CARD */
+.year-card{border-radius:22px;padding:18px 20px;position:relative;overflow:hidden}
+.year-card.ok{background:linear-gradient(140deg,#0d1a2a,#0a1520);border:.5px solid rgba(10,132,255,.25);box-shadow:0 0 40px rgba(10,132,255,.1)}
+.year-card.warn{background:linear-gradient(140deg,#2a1e0a,#241508);border:.5px solid rgba(255,159,10,.3);box-shadow:0 0 40px rgba(255,159,10,.1)}
+.year-card.urgent{background:linear-gradient(140deg,#2a0d0d,#24100a);border:.5px solid rgba(255,69,58,.3);box-shadow:0 0 40px rgba(255,69,58,.12)}
+.yc-orb{position:absolute;right:-20px;top:-20px;width:100px;height:100px;border-radius:50%;opacity:.2;filter:blur(25px);pointer-events:none}
+.year-card.ok .yc-orb{background:#0A84FF}
+.year-card.warn .yc-orb{background:#FF9F0A}
+.year-card.urgent .yc-orb{background:#FF453A}
+.yc-top{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1}
+.yc-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(242,242,247,0.4);margin-bottom:2px}
+.yc-days{font-size:13px;font-weight:600;padding:3px 10px;border-radius:14px}
+.year-card.ok .yc-days{background:rgba(10,132,255,.15);color:var(--blue)}
+.year-card.warn .yc-days{background:rgba(255,159,10,.15);color:var(--orange)}
+.year-card.urgent .yc-days{background:rgba(255,69,58,.15);color:var(--red)}
+.yc-val{font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:4px;position:relative;z-index:1}
+.year-card.ok .yc-val{color:var(--blue)}
+.year-card.warn .yc-val{color:var(--orange)}
+.year-card.urgent .yc-val{color:var(--red)}
+.yc-sub{font-size:13px;color:rgba(242,242,247,0.4);font-weight:500;position:relative;z-index:1;margin-bottom:14px}
+.yc-prog{position:relative;z-index:1}
+.yc-prog-top{display:flex;justify-content:space-between;font-size:11px;color:rgba(242,242,247,0.35);font-weight:600;margin-bottom:5px}
+.yc-prog-track{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.yc-prog-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.year-card.ok .yc-prog-fill{background:var(--blue)}
+.year-card.warn .yc-prog-fill{background:var(--orange)}
+.year-card.urgent .yc-prog-fill{background:var(--red)}
+
+/* SOLDE CARD */
+.solde-card{border-radius:18px;background:var(--bg2);border:.5px solid var(--border);padding:16px 18px;display:flex;align-items:center;gap:16px}
+.sc-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sc-icon.pos{background:rgba(48,209,88,.12)}
+.sc-icon.neg{background:rgba(255,69,58,.1)}
+.sc-icon.neu{background:var(--bg3)}
+.sc-info{flex:1}
+.sc-lbl{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.sc-val{font-size:32px;font-weight:800;letter-spacing:-1px}
+.sc-val.pos{color:var(--green)}
+.sc-val.neg{color:var(--red)}
+.sc-val.neu{color:var(--text3)}
+.sc-sub{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* ACTIONS */
+.actions-card{border-radius:18px;background:var(--bg2);border:.5px solid var(--border);overflow:hidden}
+.ac-title{font-size:13px;font-weight:700;color:var(--text2);padding:14px 16px 10px;border-bottom:.5px solid var(--border)}
+.ac-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:.5px solid var(--border)}
+.ac-row:last-child{border-bottom:none}
+.ac-lbl{flex:1;font-size:14px;font-weight:600;color:var(--text)}
+.ac-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.ac-input-wrap{display:flex;align-items:center;gap:8px}
+.ac-input{width:90px;background:var(--bg3);border:1.5px solid transparent;border-radius:10px;
+  color:var(--text);font-size:16px;font-weight:700;font-family:inherit;
+  padding:9px 10px;text-align:center;outline:none;transition:border-color .2s;
+  -webkit-appearance:none;caret-color:var(--blue)}
+.ac-input:focus{border-color:var(--blue);background:rgba(10,132,255,.07)}
+.ac-input::placeholder{color:var(--text3);font-size:13px;font-weight:400}
+.ac-btn{padding:9px 16px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all .15s;white-space:nowrap}
+.ac-btn.add{background:rgba(48,209,88,.15);color:var(--green)}
+.ac-btn.add:active{background:rgba(48,209,88,.25)}
+.ac-btn.sub{background:rgba(255,69,58,.12);color:var(--red)}
+.ac-btn.sub:active{background:rgba(255,69,58,.22)}
+
+/* LOG */
+.log-card{border-radius:18px;background:var(--bg2);border:.5px solid var(--border);overflow:hidden}
+.log-title{font-size:13px;font-weight:700;color:var(--text2);padding:14px 16px 10px;border-bottom:.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.log-clear{font-size:12px;color:var(--red);font-weight:600;background:none;border:none;cursor:pointer;font-family:inherit}
+.log-row{display:flex;align-items:center;padding:10px 16px;border-bottom:.5px solid var(--border);gap:10px}
+.log-row:last-child{border-bottom:none}
+.log-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.log-dot.pos{background:rgba(48,209,88,.12);color:var(--green)}
+.log-dot.neg{background:rgba(255,69,58,.1);color:var(--red)}
+.log-info{flex:1}
+.log-desc{font-size:13px;font-weight:600;color:var(--text)}
+.log-date{font-size:11px;color:var(--text3);margin-top:1px}
+.log-val{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.log-val.pos{color:var(--green)}
+.log-val.neg{color:var(--red)}
+.log-empty{padding:30px 20px;text-align:center;color:var(--text3);font-size:13px}
 
 /* TAB BAR */
-.tabbar{flex-shrink:0;background:rgba(10,10,15,.92);
-  backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
-  border-top:.5px solid var(--border);display:flex;padding-bottom:var(--safe-bot)}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:9px 0 3px;border:none;background:none;cursor:pointer;
-  color:var(--text3);transition:color .15s;gap:2px}
+.tabbar{flex-shrink:0;background:rgba(10,10,15,.92);backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);border-top:.5px solid var(--border);
+  display:flex;padding-bottom:var(--safe-bot)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 3px;
+  border:none;background:none;cursor:pointer;color:var(--text3);transition:color .15s;gap:2px}
 .tab.on{color:var(--blue)}
 .tab-ico{font-size:20px;line-height:1}
 .tab-lbl{font-size:10px;font-weight:600;letter-spacing:.2px}
@@ -168,24 +209,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
 /* TOAST */
 .toast{position:fixed;left:50%;top:calc(var(--safe-top) + 54px);
   transform:translateX(-50%) translateY(-12px);
-  background:rgba(40,40,55,.96);color:var(--text);
-  padding:9px 18px;border-radius:22px;font-size:13px;font-weight:600;
+  background:rgba(40,40,55,.96);color:var(--text);padding:9px 18px;
+  border-radius:22px;font-size:13px;font-weight:600;
   opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);
   pointer-events:none;z-index:999;white-space:nowrap;
   backdrop-filter:blur(12px);border:.5px solid var(--border2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border-radius:24px 24px 0 0;padding:20px 20px calc(20px + var(--safe-bot));
+  width:100%;max-width:500px;border-top:.5px solid var(--border2)}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:16px;letter-spacing:-.3px}
+.modal-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.modal-lbl{font-size:14px;font-weight:600;flex:1}
+.modal-inp{width:110px;background:var(--bg3);border:1.5px solid transparent;border-radius:10px;
+  color:var(--text);font-size:16px;font-weight:700;font-family:inherit;
+  padding:10px 12px;text-align:center;outline:none;-webkit-appearance:none;caret-color:var(--blue)}
+.modal-inp:focus{border-color:var(--blue)}
+.modal-desc-inp{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:10px;
+  color:var(--text);font-size:14px;font-weight:500;font-family:inherit;
+  padding:10px 12px;outline:none;-webkit-appearance:none;caret-color:var(--blue);margin-bottom:14px}
+.modal-desc-inp:focus{border-color:var(--blue)}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:14px;border-radius:14px;border:none;cursor:pointer;
+  font-family:inherit;font-size:16px;font-weight:700;transition:all .15s}
+.modal-btn.cancel{background:var(--bg3);color:var(--text2)}
+.modal-btn.confirm.add{background:rgba(48,209,88,.2);color:var(--green)}
+.modal-btn.confirm.sub{background:rgba(255,69,58,.15);color:var(--red)}
+.modal-btn:active{opacity:.7}
+.modal-note{font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.5;
+  background:var(--bg3);padding:10px 12px;border-radius:10px}
 </style>
 </head>
 <body>
 
 <div class="safe-top"></div>
 
-<!-- PAGE SEMAINE -->
+<!-- ══ PAGE SEMAINE ══ -->
 <div class="page active" id="pgSemaine">
   <div class="hdr">
     <div class="hdr-row">
       <h1>Mes <em>Heures</em></h1>
-      <button class="btn-today" id="btnToday">Aujourd'hui</button>
+      <button class="btn-sm" id="btnToday">Aujourd'hui</button>
     </div>
     <div class="nav-row">
       <button class="nav-btn" id="btnPrev">‹</button>
@@ -213,21 +281,66 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
   </div>
 </div>
 
-<!-- PAGE HISTORIQUE -->
-<div class="page" id="pgHistorique">
+<!-- ══ PAGE COMPTEUR ══ -->
+<div class="page" id="pgCompteur">
   <div class="hdr">
-    <div class="hdr-row"><h1>Histo<em>rique</em></h1></div>
+    <div class="hdr-row"><h1>Comp<em>teur</em></h1></div>
   </div>
   <div class="scroll">
-    <div class="hist-summary" id="histSum" style="display:none">
-      <div class="hsi"><div class="hsi-lbl">Semaines</div><div class="hsi-v neu" id="hsSem">—</div></div>
-      <div class="hsi"><div class="hsi-lbl">Total supp</div><div class="hsi-v pos" id="hsSup">—</div></div>
-      <div class="hsi"><div class="hsi-lbl">Solde net</div><div class="hsi-v" id="hsSolde">—</div></div>
+
+    <!-- Fin d'année -->
+    <div class="year-card ok" id="yearCard">
+      <div class="yc-orb" id="ycOrb"></div>
+      <div class="yc-top">
+        <div><div class="yc-label">Échéance annuelle</div></div>
+        <div class="yc-days" id="ycDays">— jours</div>
+      </div>
+      <div class="yc-val" id="ycVal">—</div>
+      <div class="yc-sub" id="ycSub">jours restants avant le 31 déc.</div>
+      <div class="yc-prog">
+        <div class="yc-prog-top"><span>Année écoulée</span><span id="ycPct">—</span></div>
+        <div class="yc-prog-track"><div class="yc-prog-fill" id="ycFill" style="width:0%"></div></div>
+      </div>
     </div>
-    <div class="sec">Semaines</div>
-    <div class="hist-list" id="histList">
-      <div class="empty-hist"><div class="ei">📊</div>Saisis tes heures cette semaine<br>pour voir ton historique ici.</div>
+
+    <!-- Solde heures supp -->
+    <div class="solde-card">
+      <div class="sc-icon pos" id="scIcon">⏱</div>
+      <div class="sc-info">
+        <div class="sc-lbl">Solde heures supplémentaires</div>
+        <div class="sc-val pos" id="scVal">0h00</div>
+        <div class="sc-sub" id="scSub">Cumulées depuis le début de l'année</div>
+      </div>
     </div>
+
+    <!-- Actions -->
+    <div class="actions-card">
+      <div class="ac-title">Mouvements</div>
+      <div class="ac-row">
+        <div>
+          <div class="ac-lbl">Ajouter des heures supp</div>
+          <div class="ac-sub">Heures après 22h ou jour férié → comptées double</div>
+        </div>
+        <button class="ac-btn add" onclick="openModal('add')">+ Ajouter</button>
+      </div>
+      <div class="ac-row">
+        <div>
+          <div class="ac-lbl">Utiliser des heures</div>
+          <div class="ac-sub">Récupération, repos compensateur…</div>
+        </div>
+        <button class="ac-btn sub" onclick="openModal('sub')">− Utiliser</button>
+      </div>
+    </div>
+
+    <!-- Log -->
+    <div class="log-card">
+      <div class="log-title">
+        Historique des mouvements
+        <button class="log-clear" onclick="clearLog()">Effacer tout</button>
+      </div>
+      <div id="logList"><div class="log-empty">Aucun mouvement enregistré</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -236,17 +349,61 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
   <button class="tab on" id="tabS" onclick="goTab('Semaine')">
     <span class="tab-ico">📅</span><span class="tab-lbl">Semaine</span>
   </button>
-  <button class="tab" id="tabH" onclick="goTab('Historique')">
-    <span class="tab-ico">📈</span><span class="tab-lbl">Historique</span>
+  <button class="tab" id="tabC" onclick="goTab('Compteur')">
+    <span class="tab-ico">⏱</span><span class="tab-lbl">Compteur</span>
   </button>
 </div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeModalBg(event)">
+  <div class="modal">
+    <h3 id="modalTitle">Ajouter des heures</h3>
+    <div class="modal-row">
+      <div class="modal-lbl">Durée (hh:mm)</div>
+      <input class="modal-inp" id="modalDuree" type="text" inputmode="numeric" placeholder="01:30" maxlength="5" autocomplete="off">
+    </div>
+    <div class="modal-note" id="modalNote"></div>
+    <input class="modal-desc-inp" id="modalDesc" type="text" placeholder="Description (optionnel)" autocomplete="off">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal()">Annuler</button>
+      <button class="modal-btn confirm add" id="modalConfirm" onclick="confirmModal()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+// ── CONSTANTES ──────────────────────────────────────────────
 const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 const BASE=39*60;
 const MO=['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
 
+// Jours fériés français (MM-DD) - fixes
+const JOURS_FERIES_FIXES=['01-01','05-01','05-08','07-14','08-15','11-01','11-11','12-25'];
+
+function isJourFerie(date) {
+  const y=date.getFullYear(), m=date.getMonth()+1, d=date.getDate();
+  const key=(String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'));
+  if(JOURS_FERIES_FIXES.includes(key))return true;
+  // Pâques (algorithme de Gauss)
+  const a=y%19,b=Math.floor(y/100),c=y%100;
+  const d2=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25);
+  const g=Math.floor((b-f+1)/3),h=(19*a+b-d2-g+15)%30;
+  const i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7;
+  const m2=Math.floor((a+11*h+22*l)/451);
+  const month=Math.floor((h+l-7*m2+114)/31);
+  const day=((h+l-7*m2+114)%31)+1;
+  const paques=new Date(y,month-1,day);
+  const lundiPaques=new Date(paques);lundiPaques.setDate(paques.getDate()+1);
+  const ascension=new Date(paques);ascension.setDate(paques.getDate()+39);
+  const pentecote=new Date(paques);pentecote.setDate(paques.getDate()+49);
+  const lundiPentecote=new Date(paques);lundiPentecote.setDate(paques.getDate()+50);
+  const feries=[lundiPaques,ascension,pentecote,lundiPentecote];
+  return feries.some(f=>f.getDate()===d&&f.getMonth()+1===m);
+}
+
+// ── UTILS ───────────────────────────────────────────────────
 function toMin(s){
   if(!s)return null;
   const m=s.match(/^(\d{1,2})[h:,.](\d{2})$/);
@@ -266,20 +423,12 @@ function norm(s){
   return a.padStart(2,'0')+':'+b.padStart(2,'0');
 }
 function fmt(min,sign=false){
-  if(min===null||isNaN(min))return null;
-  const abs=Math.abs(min),h=Math.floor(abs/60),m=abs%60;
-  const s=min<0?'-':(sign&&min>0?'+':'');
+  if(min===null||isNaN(min))return'—';
+  const neg=min<0;
+  const abs=Math.abs(Math.round(min));
+  const h=Math.floor(abs/60),m=abs%60;
+  const s=neg?'-':(sign&&min>0?'+':'');
   return s+h+'h'+String(m).padStart(2,'0');
-}
-function calcDay(d){
-  const dm=toMin(d.deb_m),fm=toMin(d.fin_m);
-  const da=toMin(d.deb_am),fa=toMin(d.fin_am);
-  const p=toMin(d.pause)||0;
-  let t=0,ok=false;
-  if(dm!==null&&fm!==null&&fm>dm){t+=fm-dm;ok=true;}
-  if(da!==null&&fa!==null&&fa>da){t+=fa-da;ok=true;}
-  t-=p;
-  return ok?Math.max(0,t):null;
 }
 function mondayOf(date){
   const d=new Date(date),day=d.getDay();
@@ -296,28 +445,93 @@ function dStr(mon,i){
   const d=new Date(mon);d.setDate(d.getDate()+i);
   return d.getDate()+' '+MO[d.getMonth()];
 }
+function dObj(mon,i){
+  const d=new Date(mon);d.setDate(d.getDate()+i);return d;
+}
+function todayStr(){
+  const n=new Date();
+  return n.getDate()+' '+MO[n.getMonth()]+' '+n.getFullYear();
+}
 
+// Calcule les heures d'un jour en tenant compte des heures après 22h et jours fériés
+function calcDayAdvanced(d, dateObj) {
+  const dm=toMin(d.deb_m),fm=toMin(d.fin_m);
+  const da=toMin(d.deb_am),fa=toMin(d.fin_am);
+  const p=toMin(d.pause)||0;
+  const ferie=d.ferie||false;
+
+  let normal=0,double_=0,ok=false;
+
+  function splitNightDouble(start,end){
+    // avant 22h : normal (ou double si férié), après 22h : double
+    const cut=22*60;
+    if(ferie){
+      // tout compte double
+      double_+=end-start;
+    } else {
+      if(end<=cut){normal+=end-start;}
+      else if(start>=cut){double_+=end-start;}
+      else{normal+=cut-start;double_+=end-cut;}
+    }
+  }
+  if(dm!==null&&fm!==null&&fm>dm){splitNightDouble(dm,fm);ok=true;}
+  if(da!==null&&fa!==null&&fa>da){splitNightDouble(da,fa);ok=true;}
+
+  if(!ok)return{total:null,bonus:0};
+  const rawNormal=normal;
+  const rawDouble=double_;
+  const totalRaw=rawNormal+rawDouble*2;
+  const bonus=rawDouble; // heures bonus issues du doublement
+  const total=Math.max(0,totalRaw-p);
+  const bonusNet=Math.max(0,bonus); // bonus brut (sans retirer la pause)
+  return{total,bonus:bonusNet,normal:rawNormal,doubled:rawDouble};
+}
+
+function calcDay(d){
+  const r=calcDayAdvanced(d,null);
+  return r.total;
+}
+
+// ── STATE ───────────────────────────────────────────────────
 let curMon=mondayOf(new Date());
-let db=JSON.parse(localStorage.getItem('mh3')||'{}');
+let db=JSON.parse(localStorage.getItem('mh4')||'{}');
+let compteur=JSON.parse(localStorage.getItem('mh4_cpt')||JSON.stringify({solde:0,log:[]}));
+
 function getWeek(k){
-  if(!db[k])db[k]=DAYS.map(()=>({deb_m:'',fin_m:'',deb_am:'',fin_am:'',pause:''}));
+  if(!db[k])db[k]=DAYS.map(()=>({deb_m:'',fin_m:'',deb_am:'',fin_am:'',pause:'',ferie:false}));
   return db[k];
 }
-function save(){localStorage.setItem('mh3',JSON.stringify(db));}
+function save(){localStorage.setItem('mh4',JSON.stringify(db));}
+function saveCpt(){localStorage.setItem('mh4_cpt',JSON.stringify(compteur));}
 
+// ── RENDER WEEK ─────────────────────────────────────────────
 function renderWeek(){
   const k=wKey(curMon),data=getWeek(k);
   document.getElementById('navWeek').textContent=wLabel(curMon);
   const wrap=document.getElementById('dayCards');
   wrap.innerHTML='';
   data.forEach((day,i)=>{
-    const min=calcDay(day),ts=min!==null?fmt(min):null;
+    const dateObj=dObj(curMon,i);
+    const isFerieAuto=isJourFerie(dateObj);
+    if(isFerieAuto&&!day.ferie_set)day.ferie=true; // auto-set jours fériés
+    const {total,bonus,doubled}=calcDayAdvanced(day,dateObj);
+    const ts=total!==null?fmt(total):null;
+    const hasNight=doubled>0&&!day.ferie;
+    const hasFerie=day.ferie;
+
     const card=document.createElement('div');
     card.className='day-card';
     card.innerHTML=`
       <div class="day-hdr">
-        <div><div class="day-name">${DAYS[i]}</div><div class="day-date">${dStr(curMon,i)}</div></div>
-        <div class="day-badge ${ts?'done':'empty'}" id="db_${i}">${ts||'—'}</div>
+        <div class="day-left">
+          <div class="day-name">${DAYS[i]}</div>
+          <div class="day-date">${dStr(curMon,i)}</div>
+        </div>
+        <div class="day-right">
+          <button class="ferie-btn ${day.ferie?'on':'off'}" id="ferieBtn_${i}"
+            onclick="toggleFerie(${i})">${day.ferie?'🎌 Férié':'Férié'}</button>
+          <div class="day-badge ${ts?'done':'empty'}" id="db_${i}">${ts||'—'}</div>
+        </div>
       </div>
       <div class="day-body">
         <div>
@@ -348,14 +562,17 @@ function renderWeek(){
           <span class="pause-lbl">☕ Pause déduite</span>
           <input class="pause-i" type="text" inputmode="numeric" placeholder="00:00" id="pause_${i}" value="${day.pause}" maxlength="5" autocomplete="off">
         </div>
+        ${(hasNight||hasFerie)?`<div class="night-info" id="nightInfo_${i}">
+          ${hasFerie?'🎌 Jour férié — heures comptées double':'🌙 Heures après 22h comptées double'}
+          ${bonus>0?'(+'+fmt(bonus)+' bonus)':''}
+        </div>`:'<div id="nightInfo_${i}"></div>'}
       </div>`;
     wrap.appendChild(card);
     ['deb_m','fin_m','deb_am','fin_am','pause'].forEach(f=>{
       const inp=document.getElementById(`${f}_${i}`);
       inp.addEventListener('blur',()=>{
-        const v=norm(inp.value);
-        inp.value=v;day[f]=v;save();
-        refreshDay(i,day);refreshHero(data);
+        const v=norm(inp.value);inp.value=v;day[f]=v;save();
+        refreshDay(i,day,dateObj);refreshHero(data);
       });
       inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
     });
@@ -363,10 +580,18 @@ function renderWeek(){
   refreshHero(data);
 }
 
-function refreshDay(i,day){
-  const min=calcDay(day),el=document.getElementById(`db_${i}`);
+function toggleFerie(i){
+  const k=wKey(curMon),data=getWeek(k);
+  data[i].ferie=!data[i].ferie;
+  data[i].ferie_set=true;
+  save();renderWeek();
+}
+
+function refreshDay(i,day,dateObj){
+  const {total,bonus,doubled}=calcDayAdvanced(day,dateObj);
+  const el=document.getElementById(`db_${i}`);
   if(!el)return;
-  if(min!==null){el.textContent=fmt(min);el.className='day-badge done';}
+  if(total!==null){el.textContent=fmt(total);el.className='day-badge done';}
   else{el.textContent='—';el.className='day-badge empty';}
 }
 
@@ -381,86 +606,149 @@ function refreshHero(data){
   document.getElementById('progFill').style.width=pct+'%';
   const hero=document.getElementById('hero'),ev=document.getElementById('heroVal');
   const orb=document.getElementById('heroOrb');
-  if(total===0){
-    ev.textContent='—';hero.className='hero neutral';
-    if(orb)orb.style.background='#0A84FF';
-  } else if(ecart>=0){
-    ev.textContent='+'+fmt(ecart);hero.className='hero surplus';
-    if(orb)orb.style.background='#30D158';
+  if(total===0){ev.textContent='—';hero.className='hero neutral';if(orb)orb.style.background='#0A84FF';}
+  else if(ecart>=0){ev.textContent='+'+fmt(ecart);hero.className='hero surplus';if(orb)orb.style.background='#30D158';}
+  else{ev.textContent=fmt(ecart);hero.className='hero deficit';if(orb)orb.style.background='#FF453A';}
+
+  // Auto-ajouter au compteur si semaine passée et non encore comptabilisée
+  const k=wKey(curMon);
+  const today=new Date();today.setHours(0,0,0,0);
+  const monDate=new Date(curMon);
+  const sunDate=new Date(curMon);sunDate.setDate(sunDate.getDate()+6);
+  if(sunDate<today&&ecart>0&&!db[k+'_counted']){
+    db[k+'_counted']=true;
+    compteur.solde+=ecart;
+    compteur.log.unshift({type:'add',val:ecart,desc:'Heures supp – '+wLabel(curMon),date:todayStr()});
+    save();saveCpt();
+    showToast('+'+fmt(ecart)+' ajoutées au compteur');
+  }
+}
+
+// ── COMPTEUR ────────────────────────────────────────────────
+function renderCompteur(){
+  // Solde
+  const s=compteur.solde;
+  const sv=document.getElementById('scVal');
+  const si=document.getElementById('scIcon');
+  sv.textContent=fmt(s);
+  sv.className='sc-val '+(s>0?'pos':s<0?'neg':'neu');
+  si.className='sc-icon '+(s>0?'pos':s<0?'neg':'neu');
+  si.textContent=s>0?'⏱':s<0?'⚠️':'⏱';
+  document.getElementById('scSub').textContent=s>=0?'Disponibles à utiliser avant le 31 déc.':'Solde négatif — heures dues';
+
+  // Année
+  const now=new Date();
+  const endYear=new Date(now.getFullYear(),11,31);
+  const startYear=new Date(now.getFullYear(),0,1);
+  const totalDays=Math.round((endYear-startYear)/(1000*60*60*24))+1;
+  const elapsed=Math.round((now-startYear)/(1000*60*60*24));
+  const remaining=Math.round((endYear-now)/(1000*60*60*24));
+  const pctYear=Math.round(elapsed/totalDays*100);
+
+  document.getElementById('ycVal').textContent=remaining;
+  document.getElementById('ycSub').textContent='jours restants avant le 31 déc. '+now.getFullYear();
+  document.getElementById('ycDays').textContent=remaining+' jours';
+  document.getElementById('ycPct').textContent=pctYear+'%';
+  document.getElementById('ycFill').style.width=pctYear+'%';
+
+  const yc=document.getElementById('yearCard'),ycO=document.getElementById('ycOrb');
+  if(remaining>90){
+    yc.className='year-card ok';ycO.style.background='#0A84FF';
+    document.getElementById('ycDays').style.background='rgba(10,132,255,.15)';
+    document.getElementById('ycDays').style.color='#0A84FF';
+  } else if(remaining>30){
+    yc.className='year-card warn';ycO.style.background='#FF9F0A';
+    document.getElementById('ycDays').style.background='rgba(255,159,10,.15)';
+    document.getElementById('ycDays').style.color='#FF9F0A';
   } else {
-    ev.textContent=fmt(ecart);hero.className='hero deficit';
-    if(orb)orb.style.background='#FF453A';
+    yc.className='year-card urgent';ycO.style.background='#FF453A';
+    document.getElementById('ycDays').style.background='rgba(255,69,58,.15)';
+    document.getElementById('ycDays').style.color='#FF453A';
+    if(s>0)showToast('⚠️ '+remaining+'j restants — '+fmt(s)+' à utiliser !');
   }
-}
 
-function renderHistory(){
-  const keys=Object.keys(db).sort().reverse();
-  const curKey=wKey(curMon);
-  const list=document.getElementById('histList');
-  const sum=document.getElementById('histSum');
-  if(keys.length===0){
-    list.innerHTML='<div class="empty-hist"><div class="ei">📊</div>Saisis tes heures cette semaine<br>pour voir ton historique ici.</div>';
-    sum.style.display='none';return;
+  // Log
+  const logEl=document.getElementById('logList');
+  if(compteur.log.length===0){
+    logEl.innerHTML='<div class="log-empty">Aucun mouvement enregistré</div>';
+    return;
   }
-  let tSup=0,tDef=0,nbW=0;
-  keys.forEach(k=>{
-    let wt=0;db[k].forEach(d=>{const m=calcDay(d);if(m!==null)wt+=m;});
-    if(wt>0){nbW++;const e=wt-BASE;if(e>=0)tSup+=e;else tDef+=e;}
-  });
-  const solde=tSup+tDef;
-  document.getElementById('hsSem').textContent=nbW;
-  document.getElementById('hsSup').textContent=fmt(tSup)||'0h00';
-  const se=document.getElementById('hsSolde');
-  se.textContent=(solde>=0?'+':'')+(fmt(solde)||'0h00');
-  se.className='hsi-v '+(solde>0?'pos':solde<0?'neg':'neu');
-  sum.style.display=nbW>0?'flex':'none';
-  list.innerHTML='';
-  keys.forEach(k=>{
-    let wt=0;db[k].forEach(d=>{const m=calcDay(d);if(m!==null)wt+=m;});
-    const e=wt>0?wt-BASE:null;
-    const isCur=k===curKey;
-    const eStr=e!==null?(e>=0?'+':'')+fmt(e):'—';
-    const cls=e===null?'neu':e>=0?'pos':'neg';
-    const mon=new Date(k+'T12:00:00');
-    const lbl=isCur?'📍 Semaine en cours':wLabel(mon);
-    const dotChar=e===null?'·':e>=0?'+':'−';
+  logEl.innerHTML='';
+  compteur.log.forEach((entry,idx)=>{
     const row=document.createElement('div');
-    row.className='hist-row';
+    row.className='log-row';
     row.innerHTML=`
-      <div class="hr-dot ${cls}">${dotChar}</div>
-      <div class="hr-info">
-        <div class="hr-week">${lbl}</div>
-        <div class="hr-sub">${wt>0?fmt(wt)+' travaillées':'Aucune saisie'}</div>
+      <div class="log-dot ${entry.type==='add'?'pos':'neg'}">${entry.type==='add'?'+':'−'}</div>
+      <div class="log-info">
+        <div class="log-desc">${entry.desc||'Mouvement manuel'}</div>
+        <div class="log-date">${entry.date}</div>
       </div>
-      <div class="hr-right">
-        <div class="hr-ecart ${cls}">${eStr}</div>
-        <div class="hr-pct">${wt>0?Math.round(wt/BASE*100)+'% de la base':''}</div>
-      </div>
-      <div class="hr-chev">›</div>`;
-    row.addEventListener('click',()=>{
-      curMon=mondayOf(new Date(k+'T12:00:00'));
-      goTab('Semaine');renderWeek();
-    });
-    list.appendChild(row);
+      <div class="log-val ${entry.type==='add'?'pos':'neg'}">${entry.type==='add'?'+':'−'}${fmt(Math.abs(entry.val))}</div>`;
+    logEl.appendChild(row);
   });
 }
 
+// ── MODAL ───────────────────────────────────────────────────
+let modalMode='add';
+function openModal(mode){
+  modalMode=mode;
+  document.getElementById('modalTitle').textContent=mode==='add'?'Ajouter des heures':'Utiliser des heures';
+  document.getElementById('modalConfirm').className='modal-btn confirm '+(mode==='add'?'add':'sub');
+  document.getElementById('modalConfirm').textContent=mode==='add'?'Ajouter':'Déduire';
+  document.getElementById('modalDuree').value='';
+  document.getElementById('modalDesc').value='';
+  document.getElementById('modalNote').textContent=mode==='add'
+    ? '💡 Heures après 22h ou jours fériés : saisis les heures brutes, elles seront automatiquement doublées si tu as coché "Férié" sur la journée — ou saisis directement la valeur déjà doublée.'
+    : '💡 Saisis le nombre d\'heures que tu poses (récupération, repos compensateur…)';
+  document.getElementById('modalBg').classList.add('open');
+  setTimeout(()=>document.getElementById('modalDuree').focus(),100);
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+function closeModalBg(e){if(e.target===document.getElementById('modalBg'))closeModal();}
+function confirmModal(){
+  const v=norm(document.getElementById('modalDuree').value);
+  const min=toMin(v);
+  if(!min||min<=0){showToast('Durée invalide');return;}
+  const desc=document.getElementById('modalDesc').value.trim()||
+    (modalMode==='add'?'Ajout manuel':'Utilisation heures');
+  if(modalMode==='add'){
+    compteur.solde+=min;
+    compteur.log.unshift({type:'add',val:min,desc,date:todayStr()});
+    showToast('+'+fmt(min)+' ajoutées ✓');
+  } else {
+    compteur.solde-=min;
+    compteur.log.unshift({type:'sub',val:min,desc,date:todayStr()});
+    showToast('−'+fmt(min)+' déduites ✓');
+  }
+  saveCpt();closeModal();renderCompteur();
+}
+function clearLog(){
+  if(!confirm('Effacer tout l\'historique ?'))return;
+  compteur.log=[];saveCpt();renderCompteur();
+}
+
+// ── NAV ─────────────────────────────────────────────────────
 document.getElementById('btnPrev').addEventListener('click',()=>{curMon.setDate(curMon.getDate()-7);renderWeek();});
 document.getElementById('btnNext').addEventListener('click',()=>{curMon.setDate(curMon.getDate()+7);renderWeek();});
 document.getElementById('btnToday').addEventListener('click',()=>{curMon=mondayOf(new Date());renderWeek();showToast('Semaine actuelle');});
 
+// ── TABS ────────────────────────────────────────────────────
 function goTab(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.getElementById('pg'+name).classList.add('active');
   document.getElementById('tab'+name[0]).classList.add('on');
-  if(name==='Historique')renderHistory();
+  if(name==='Compteur')renderCompteur();
 }
+
+// ── TOAST ───────────────────────────────────────────────────
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),1800);
+  setTimeout(()=>t.classList.remove('show'),2200);
 }
+
+// ── INIT ────────────────────────────────────────────────────
 renderWeek();
 </script>
 </body>
