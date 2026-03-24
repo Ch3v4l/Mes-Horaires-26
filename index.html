@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mes Heures">
+<meta name="theme-color" content="#0A0A0F">
+<title>Mes Heures</title>
+<style>
+:root {
+  --bg:#0A0A0F;--bg2:#13131A;--bg3:#1E1E28;--bg4:#2A2A38;--bg5:#35354A;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#F2F2F7;--text2:rgba(242,242,247,0.55);--text3:rgba(242,242,247,0.28);
+  --blue:#0A84FF;--green:#30D158;--red:#FF453A;--orange:#FF9F0A;
+  --r16:16px;--r12:12px;
+  --safe-top:env(safe-area-inset-top,50px);
+  --safe-bot:env(safe-area-inset-bottom,34px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
+  background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column}
+.page{flex:1;display:none;flex-direction:column;overflow:hidden}
+.page.active{display:flex}
+.safe-top{height:var(--safe-top);flex-shrink:0;background:var(--bg)}
+.hdr{flex-shrink:0;background:rgba(10,10,15,.9);backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);border-bottom:.5px solid var(--border);padding:10px 18px 12px}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.hdr h1{font-size:26px;font-weight:800;letter-spacing:-.6px}
+.hdr h1 em{font-style:normal;color:var(--blue)}
+.nav-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+.nav-btn{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg3);
+  color:var(--blue);font-size:17px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:transform .12s,background .12s}
+.nav-btn:active{transform:scale(.88);background:var(--bg4)}
+.nav-week{flex:1;text-align:center;font-size:13px;font-weight:600;color:var(--text2)}
+.btn-today{font-size:12px;border:none;background:var(--bg3);color:var(--blue);
+  font-weight:700;padding:3px 11px;border-radius:20px;cursor:pointer;font-family:inherit}
+.btn-today:active{background:var(--bg4)}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:16px 14px calc(82px + var(--safe-bot));
+  display:flex;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+/* HERO */
+.hero{border-radius:22px;padding:18px 20px 18px;position:relative;}
+.hero.surplus{background:linear-gradient(140deg,#0d2a18,#0a1f24);
+  box-shadow:0 0 40px rgba(48,209,88,.12),inset 0 1px 0 rgba(48,209,88,.2);
+  border:.5px solid rgba(48,209,88,.2)}
+.hero.deficit{background:linear-gradient(140deg,#2a0d0d,#24100a);
+  box-shadow:0 0 40px rgba(255,69,58,.1),inset 0 1px 0 rgba(255,69,58,.18);
+  border:.5px solid rgba(255,69,58,.18)}
+.hero.neutral{background:linear-gradient(140deg,var(--bg2),var(--bg3));border:.5px solid var(--border)}
+.hero-orb{position:absolute;right:-30px;top:-30px;width:120px;height:120px;
+  border-radius:50%;opacity:.18;filter:blur(30px);pointer-events:none;z-index:0}
+.hero-lbl,.hero-val,.hero-stats,.prog-wrap{position:relative;z-index:1}
+.hero-lbl{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
+  color:rgba(242,242,247,0.45);margin-bottom:4px}
+.hero-val{font-size:48px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:12px;color:var(--text)}
+.hero.surplus .hero-val{color:var(--green)}
+.hero.deficit .hero-val{color:var(--red)}
+.hero.neutral .hero-val{color:rgba(242,242,247,0.35);font-size:36px;letter-spacing:-1px}
+.hero-stats{display:flex;margin-top:0}
+.hs{flex:1;padding:12px 0 0;border-top:1px solid rgba(255,255,255,.1)}
+.hs+.hs{border-left:1px solid rgba(255,255,255,.1);padding-left:14px}
+.hs-lbl{font-size:10px;color:rgba(242,242,247,0.4);font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:3px}
+.hs-v{font-size:18px;font-weight:700;letter-spacing:-.4px;color:var(--text)}
+.prog-wrap{margin-top:12px}
+.prog-top{display:flex;justify-content:space-between;font-size:11px;font-weight:600;
+  color:rgba(242,242,247,0.4);margin-bottom:5px}
+.prog-track{height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width .7s cubic-bezier(.34,1.56,.64,1)}
+.hero.surplus .prog-fill{background:var(--green)}
+.hero.deficit .prog-fill{background:var(--red)}
+.hero.neutral .prog-fill{background:var(--blue)}
+
+/* SECTION */
+.sec{font-size:18px;font-weight:700;letter-spacing:-.3px;padding:2px 2px 0}
+
+/* DAY CARD */
+.day-card{background:var(--bg2);border-radius:var(--r16);border:.5px solid var(--border);
+  overflow:hidden;transition:transform .12s;margin-bottom:10px}
+.day-card:active{transform:scale(.99)}
+.day-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px 10px;border-bottom:.5px solid var(--border)}
+.day-name{font-size:15px;font-weight:700}
+.day-date{font-size:11px;color:var(--text3);margin-top:1px;font-weight:500}
+.day-badge{font-size:18px;font-weight:800;letter-spacing:-.4px;color:var(--green);transition:color .2s}
+.day-badge.empty{font-size:13px;font-weight:400;color:var(--text3)}
+.day-badge.done{background:rgba(48,209,88,.1);color:var(--green);
+  padding:4px 10px;border-radius:20px;font-size:15px}
+.day-body{padding:10px 14px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ts-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.dot{width:5px;height:5px;border-radius:50%;display:inline-block}
+.dot.m{background:var(--blue)}.dot.am{background:var(--orange)}
+.ts-row{display:flex;align-items:center;gap:4px}
+.ti-wrap{flex:1;position:relative}
+.ti-wrap b{position:absolute;top:5px;left:9px;font-size:9px;font-weight:700;
+  color:var(--text3);letter-spacing:.4px;text-transform:uppercase;pointer-events:none}
+.ti{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:10px;
+  color:var(--text);font-size:16px;font-weight:700;font-family:inherit;
+  padding:18px 8px 5px;text-align:center;outline:none;
+  transition:border-color .2s,background .2s;letter-spacing:.3px;
+  -webkit-appearance:none;caret-color:var(--blue)}
+.ti:focus{border-color:var(--blue);background:rgba(10,132,255,.07)}
+.ti::placeholder{color:var(--text3);font-size:14px;font-weight:400;letter-spacing:0}
+.ti-sep{font-size:14px;color:var(--text3);flex-shrink:0;margin-top:5px}
+.pause-row{display:flex;align-items:center;gap:10px;grid-column:1/-1;
+  padding-top:8px;border-top:.5px solid var(--border);margin-top:2px}
+.pause-lbl{font-size:12px;color:var(--text3);font-weight:500;flex:1}
+.pause-i{width:80px;background:var(--bg3);border:1.5px solid transparent;
+  border-radius:9px;color:var(--text);font-size:15px;font-weight:700;
+  font-family:inherit;padding:7px 8px;text-align:center;outline:none;
+  transition:border-color .2s,background .2s;-webkit-appearance:none;caret-color:var(--blue)}
+.pause-i:focus{border-color:var(--blue);background:rgba(10,132,255,.07)}
+.pause-i::placeholder{color:var(--text3);font-size:12px;font-weight:400}
+
+/* HISTORY */
+.hist-summary{border-radius:var(--r16);background:var(--bg2);border:.5px solid var(--border);
+  padding:16px 16px 14px;display:flex;gap:0}
+.hsi{flex:1;text-align:center}
+.hsi+.hsi{border-left:.5px solid var(--border)}
+.hsi-lbl{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:4px}
+.hsi-v{font-size:22px;font-weight:800;letter-spacing:-.6px}
+.hsi-v.pos{color:var(--green)}.hsi-v.neg{color:var(--red)}.hsi-v.neu{color:var(--text2)}
+.hist-list{background:var(--bg2);border-radius:var(--r16);
+  border:.5px solid var(--border);overflow:hidden}
+.hist-row{display:flex;align-items:center;padding:13px 14px;
+  border-bottom:.5px solid var(--border);cursor:pointer;
+  transition:background .1s;gap:10px}
+.hist-row:last-child{border-bottom:none}
+.hist-row:active{background:var(--bg3)}
+.hr-dot{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.hr-dot.pos{background:rgba(48,209,88,.15);color:var(--green)}
+.hr-dot.neg{background:rgba(255,69,58,.12);color:var(--red)}
+.hr-dot.neu{background:var(--bg3);color:var(--text3)}
+.hr-info{flex:1}
+.hr-week{font-size:14px;font-weight:600}
+.hr-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.hr-right{text-align:right}
+.hr-ecart{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.hr-ecart.pos{color:var(--green)}.hr-ecart.neg{color:var(--red)}
+.hr-ecart.neu{color:var(--text3);font-size:13px;font-weight:400}
+.hr-pct{font-size:11px;color:var(--text3);margin-top:1px}
+.hr-chev{color:var(--text3);font-size:11px;margin-left:4px}
+.empty-hist{padding:40px 20px;text-align:center;color:var(--text3);
+  font-size:14px;line-height:1.6}
+.empty-hist .ei{font-size:36px;margin-bottom:10px}
+
+/* TAB BAR */
+.tabbar{flex-shrink:0;background:rgba(10,10,15,.92);
+  backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
+  border-top:.5px solid var(--border);display:flex;padding-bottom:var(--safe-bot)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:9px 0 3px;border:none;background:none;cursor:pointer;
+  color:var(--text3);transition:color .15s;gap:2px}
+.tab.on{color:var(--blue)}
+.tab-ico{font-size:20px;line-height:1}
+.tab-lbl{font-size:10px;font-weight:600;letter-spacing:.2px}
+
+/* TOAST */
+.toast{position:fixed;left:50%;top:calc(var(--safe-top) + 54px);
+  transform:translateX(-50%) translateY(-12px);
+  background:rgba(40,40,55,.96);color:var(--text);
+  padding:9px 18px;border-radius:22px;font-size:13px;font-weight:600;
+  opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;z-index:999;white-space:nowrap;
+  backdrop-filter:blur(12px);border:.5px solid var(--border2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="safe-top"></div>
+
+<!-- PAGE SEMAINE -->
+<div class="page active" id="pgSemaine">
+  <div class="hdr">
+    <div class="hdr-row">
+      <h1>Mes <em>Heures</em></h1>
+      <button class="btn-today" id="btnToday">Aujourd'hui</button>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" id="btnPrev">‹</button>
+      <div class="nav-week" id="navWeek">—</div>
+      <button class="nav-btn" id="btnNext">›</button>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="hero neutral" id="hero">
+      <div class="hero-orb" id="heroOrb" style="background:#0A84FF"></div>
+      <div class="hero-lbl">Écart semaine</div>
+      <div class="hero-val" id="heroVal">—</div>
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-lbl">Travaillé</div><div class="hs-v" id="hTotal">0h00</div></div>
+        <div class="hs"><div class="hs-lbl">Base</div><div class="hs-v">39h00</div></div>
+        <div class="hs"><div class="hs-lbl">Restant</div><div class="hs-v" id="hRestant">39h00</div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-top"><span>Progression semaine</span><span id="progPct">0%</span></div>
+        <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="sec">Jours</div>
+    <div id="dayCards"></div>
+  </div>
+</div>
+
+<!-- PAGE HISTORIQUE -->
+<div class="page" id="pgHistorique">
+  <div class="hdr">
+    <div class="hdr-row"><h1>Histo<em>rique</em></h1></div>
+  </div>
+  <div class="scroll">
+    <div class="hist-summary" id="histSum" style="display:none">
+      <div class="hsi"><div class="hsi-lbl">Semaines</div><div class="hsi-v neu" id="hsSem">—</div></div>
+      <div class="hsi"><div class="hsi-lbl">Total supp</div><div class="hsi-v pos" id="hsSup">—</div></div>
+      <div class="hsi"><div class="hsi-lbl">Solde net</div><div class="hsi-v" id="hsSolde">—</div></div>
+    </div>
+    <div class="sec">Semaines</div>
+    <div class="hist-list" id="histList">
+      <div class="empty-hist"><div class="ei">📊</div>Saisis tes heures cette semaine<br>pour voir ton historique ici.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tabbar">
+  <button class="tab on" id="tabS" onclick="goTab('Semaine')">
+    <span class="tab-ico">📅</span><span class="tab-lbl">Semaine</span>
+  </button>
+  <button class="tab" id="tabH" onclick="goTab('Historique')">
+    <span class="tab-ico">📈</span><span class="tab-lbl">Historique</span>
+  </button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+const BASE=39*60;
+const MO=['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+
+function toMin(s){
+  if(!s)return null;
+  const m=s.match(/^(\d{1,2})[h:,.](\d{2})$/);
+  if(!m)return null;
+  const h=+m[1],mn=+m[2];
+  if(h>23||mn>59)return null;
+  return h*60+mn;
+}
+function norm(s){
+  if(!s)return'';
+  s=s.trim().replace(/[hH]/,':');
+  if(/^\d{3}$/.test(s))s='0'+s[0]+':'+s.slice(1);
+  if(/^\d{4}$/.test(s))s=s.slice(0,2)+':'+s.slice(2);
+  if(/^\d{1,2}$/.test(s))s=s.padStart(2,'0')+':00';
+  if(!s.includes(':'))return s;
+  const[a,b]=s.split(':');
+  return a.padStart(2,'0')+':'+b.padStart(2,'0');
+}
+function fmt(min,sign=false){
+  if(min===null||isNaN(min))return null;
+  const abs=Math.abs(min),h=Math.floor(abs/60),m=abs%60;
+  const s=min<0?'-':(sign&&min>0?'+':'');
+  return s+h+'h'+String(m).padStart(2,'0');
+}
+function calcDay(d){
+  const dm=toMin(d.deb_m),fm=toMin(d.fin_m);
+  const da=toMin(d.deb_am),fa=toMin(d.fin_am);
+  const p=toMin(d.pause)||0;
+  let t=0,ok=false;
+  if(dm!==null&&fm!==null&&fm>dm){t+=fm-dm;ok=true;}
+  if(da!==null&&fa!==null&&fa>da){t+=fa-da;ok=true;}
+  t-=p;
+  return ok?Math.max(0,t):null;
+}
+function mondayOf(date){
+  const d=new Date(date),day=d.getDay();
+  d.setDate(d.getDate()+(day===0?-6:1-day));
+  d.setHours(0,0,0,0);return d;
+}
+function wKey(mon){return mon.toISOString().slice(0,10);}
+function wLabel(mon){
+  const fri=new Date(mon);fri.setDate(fri.getDate()+4);
+  const f=d=>d.getDate()+' '+MO[d.getMonth()];
+  return f(mon)+' – '+f(fri);
+}
+function dStr(mon,i){
+  const d=new Date(mon);d.setDate(d.getDate()+i);
+  return d.getDate()+' '+MO[d.getMonth()];
+}
+
+let curMon=mondayOf(new Date());
+let db=JSON.parse(localStorage.getItem('mh3')||'{}');
+function getWeek(k){
+  if(!db[k])db[k]=DAYS.map(()=>({deb_m:'',fin_m:'',deb_am:'',fin_am:'',pause:''}));
+  return db[k];
+}
+function save(){localStorage.setItem('mh3',JSON.stringify(db));}
+
+function renderWeek(){
+  const k=wKey(curMon),data=getWeek(k);
+  document.getElementById('navWeek').textContent=wLabel(curMon);
+  const wrap=document.getElementById('dayCards');
+  wrap.innerHTML='';
+  data.forEach((day,i)=>{
+    const min=calcDay(day),ts=min!==null?fmt(min):null;
+    const card=document.createElement('div');
+    card.className='day-card';
+    card.innerHTML=`
+      <div class="day-hdr">
+        <div><div class="day-name">${DAYS[i]}</div><div class="day-date">${dStr(curMon,i)}</div></div>
+        <div class="day-badge ${ts?'done':'empty'}" id="db_${i}">${ts||'—'}</div>
+      </div>
+      <div class="day-body">
+        <div>
+          <div class="ts-lbl"><span class="dot m"></span>Matin</div>
+          <div class="ts-row">
+            <div class="ti-wrap"><b>Début</b>
+              <input class="ti" type="text" inputmode="numeric" placeholder="08:00" id="deb_m_${i}" value="${day.deb_m}" maxlength="5" autocomplete="off">
+            </div>
+            <div class="ti-sep">›</div>
+            <div class="ti-wrap"><b>Fin</b>
+              <input class="ti" type="text" inputmode="numeric" placeholder="12:30" id="fin_m_${i}" value="${day.fin_m}" maxlength="5" autocomplete="off">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ts-lbl"><span class="dot am"></span>Après-midi</div>
+          <div class="ts-row">
+            <div class="ti-wrap"><b>Début</b>
+              <input class="ti" type="text" inputmode="numeric" placeholder="13:30" id="deb_am_${i}" value="${day.deb_am}" maxlength="5" autocomplete="off">
+            </div>
+            <div class="ti-sep">›</div>
+            <div class="ti-wrap"><b>Fin</b>
+              <input class="ti" type="text" inputmode="numeric" placeholder="17:30" id="fin_am_${i}" value="${day.fin_am}" maxlength="5" autocomplete="off">
+            </div>
+          </div>
+        </div>
+        <div class="pause-row">
+          <span class="pause-lbl">☕ Pause déduite</span>
+          <input class="pause-i" type="text" inputmode="numeric" placeholder="00:00" id="pause_${i}" value="${day.pause}" maxlength="5" autocomplete="off">
+        </div>
+      </div>`;
+    wrap.appendChild(card);
+    ['deb_m','fin_m','deb_am','fin_am','pause'].forEach(f=>{
+      const inp=document.getElementById(`${f}_${i}`);
+      inp.addEventListener('blur',()=>{
+        const v=norm(inp.value);
+        inp.value=v;day[f]=v;save();
+        refreshDay(i,day);refreshHero(data);
+      });
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+    });
+  });
+  refreshHero(data);
+}
+
+function refreshDay(i,day){
+  const min=calcDay(day),el=document.getElementById(`db_${i}`);
+  if(!el)return;
+  if(min!==null){el.textContent=fmt(min);el.className='day-badge done';}
+  else{el.textContent='—';el.className='day-badge empty';}
+}
+
+function refreshHero(data){
+  let total=0;
+  data.forEach(d=>{const m=calcDay(d);if(m!==null)total+=m;});
+  const ecart=total-BASE,pct=Math.min(100,Math.round(total/BASE*100));
+  const restant=Math.max(0,BASE-total);
+  document.getElementById('hTotal').textContent=fmt(total)||'0h00';
+  document.getElementById('hRestant').textContent=fmt(restant);
+  document.getElementById('progPct').textContent=pct+'%';
+  document.getElementById('progFill').style.width=pct+'%';
+  const hero=document.getElementById('hero'),ev=document.getElementById('heroVal');
+  const orb=document.getElementById('heroOrb');
+  if(total===0){
+    ev.textContent='—';hero.className='hero neutral';
+    if(orb)orb.style.background='#0A84FF';
+  } else if(ecart>=0){
+    ev.textContent='+'+fmt(ecart);hero.className='hero surplus';
+    if(orb)orb.style.background='#30D158';
+  } else {
+    ev.textContent=fmt(ecart);hero.className='hero deficit';
+    if(orb)orb.style.background='#FF453A';
+  }
+}
+
+function renderHistory(){
+  const keys=Object.keys(db).sort().reverse();
+  const curKey=wKey(curMon);
+  const list=document.getElementById('histList');
+  const sum=document.getElementById('histSum');
+  if(keys.length===0){
+    list.innerHTML='<div class="empty-hist"><div class="ei">📊</div>Saisis tes heures cette semaine<br>pour voir ton historique ici.</div>';
+    sum.style.display='none';return;
+  }
+  let tSup=0,tDef=0,nbW=0;
+  keys.forEach(k=>{
+    let wt=0;db[k].forEach(d=>{const m=calcDay(d);if(m!==null)wt+=m;});
+    if(wt>0){nbW++;const e=wt-BASE;if(e>=0)tSup+=e;else tDef+=e;}
+  });
+  const solde=tSup+tDef;
+  document.getElementById('hsSem').textContent=nbW;
+  document.getElementById('hsSup').textContent=fmt(tSup)||'0h00';
+  const se=document.getElementById('hsSolde');
+  se.textContent=(solde>=0?'+':'')+(fmt(solde)||'0h00');
+  se.className='hsi-v '+(solde>0?'pos':solde<0?'neg':'neu');
+  sum.style.display=nbW>0?'flex':'none';
+  list.innerHTML='';
+  keys.forEach(k=>{
+    let wt=0;db[k].forEach(d=>{const m=calcDay(d);if(m!==null)wt+=m;});
+    const e=wt>0?wt-BASE:null;
+    const isCur=k===curKey;
+    const eStr=e!==null?(e>=0?'+':'')+fmt(e):'—';
+    const cls=e===null?'neu':e>=0?'pos':'neg';
+    const mon=new Date(k+'T12:00:00');
+    const lbl=isCur?'📍 Semaine en cours':wLabel(mon);
+    const dotChar=e===null?'·':e>=0?'+':'−';
+    const row=document.createElement('div');
+    row.className='hist-row';
+    row.innerHTML=`
+      <div class="hr-dot ${cls}">${dotChar}</div>
+      <div class="hr-info">
+        <div class="hr-week">${lbl}</div>
+        <div class="hr-sub">${wt>0?fmt(wt)+' travaillées':'Aucune saisie'}</div>
+      </div>
+      <div class="hr-right">
+        <div class="hr-ecart ${cls}">${eStr}</div>
+        <div class="hr-pct">${wt>0?Math.round(wt/BASE*100)+'% de la base':''}</div>
+      </div>
+      <div class="hr-chev">›</div>`;
+    row.addEventListener('click',()=>{
+      curMon=mondayOf(new Date(k+'T12:00:00'));
+      goTab('Semaine');renderWeek();
+    });
+    list.appendChild(row);
+  });
+}
+
+document.getElementById('btnPrev').addEventListener('click',()=>{curMon.setDate(curMon.getDate()-7);renderWeek();});
+document.getElementById('btnNext').addEventListener('click',()=>{curMon.setDate(curMon.getDate()+7);renderWeek();});
+document.getElementById('btnToday').addEventListener('click',()=>{curMon=mondayOf(new Date());renderWeek();showToast('Semaine actuelle');});
+
+function goTab(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg'+name).classList.add('active');
+  document.getElementById('tab'+name[0]).classList.add('on');
+  if(name==='Historique')renderHistory();
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+renderWeek();
+</script>
+</body>
+</html>
